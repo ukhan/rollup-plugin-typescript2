@@ -37,7 +37,6 @@ const typescript: PluginImpl<RPT2Options> = (options) =>
 	let tsConfigPath: string | undefined;
 	let servicesHost: LanguageServiceHost;
 	let service: tsTypes.LanguageService;
-	let documentRegistry: tsTypes.DocumentRegistry; // keep the same DocumentRegistry between watch cycles
 	let cache: TsCache;
 	let noErrors = true;
 	let transformedFiles: Set<string>;
@@ -123,8 +122,6 @@ const typescript: PluginImpl<RPT2Options> = (options) =>
 		pluginOptions.typescript = require("typescript");
 	}
 	setTypescriptModule(pluginOptions.typescript);
-	// eslint-disable-next-line prefer-const
-	documentRegistry = tsModule.createDocumentRegistry();
 
 	const self: Plugin = {
 
@@ -175,7 +172,7 @@ const typescript: PluginImpl<RPT2Options> = (options) =>
 			filter = createFilter(context, pluginOptions, parsedConfig);
 
 			servicesHost = new LanguageServiceHost(parsedConfig, pluginOptions.transformers, pluginOptions.cwd);
-			service = tsModule.createLanguageService(servicesHost, documentRegistry);
+			service = tsModule.createLanguageService(servicesHost, tsModule.createDocumentRegistry());
 			servicesHost.setLanguageService(service);
 
 			const runClean = pluginOptions.clean;
