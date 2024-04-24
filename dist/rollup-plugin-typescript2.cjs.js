@@ -27938,7 +27938,7 @@ catch (e) {
 // these use globals during testing and are substituted by rollup-plugin-re during builds
 const TS_VERSION_RANGE = (global === null || global === void 0 ? void 0 : global.rpt2__TS_VERSION_RANGE) || ">=2.4.0";
 const ROLLUP_VERSION_RANGE = (global === null || global === void 0 ? void 0 : global.rpt2__ROLLUP_VERSION_RANGE) || ">=1.26.3";
-const RPT2_VERSION = (global === null || global === void 0 ? void 0 : global.rpt2__ROLLUP_VERSION_RANGE) || "0.36.1";
+const RPT2_VERSION = (global === null || global === void 0 ? void 0 : global.rpt2__ROLLUP_VERSION_RANGE) || "0.37.0";
 const typescript = (options) => {
     let watchMode = false;
     let supportsThisLoad = false;
@@ -27950,7 +27950,6 @@ const typescript = (options) => {
     let tsConfigPath;
     let servicesHost;
     let service;
-    let documentRegistry; // keep the same DocumentRegistry between watch cycles
     let cache;
     let noErrors = true;
     let transformedFiles;
@@ -28015,8 +28014,6 @@ const typescript = (options) => {
         pluginOptions.typescript = require("typescript");
     }
     setTypescriptModule(pluginOptions.typescript);
-    // eslint-disable-next-line prefer-const
-    documentRegistry = tsModule.createDocumentRegistry();
     const self = {
         name: "rpt2",
         options(config) {
@@ -28050,7 +28047,7 @@ const typescript = (options) => {
                 context.info(`running in watch mode`);
             filter = createFilter(context, pluginOptions, parsedConfig);
             servicesHost = new LanguageServiceHost(parsedConfig, pluginOptions.transformers, pluginOptions.cwd);
-            service = tsModule.createLanguageService(servicesHost, documentRegistry);
+            service = tsModule.createLanguageService(servicesHost, tsModule.createDocumentRegistry());
             servicesHost.setLanguageService(service);
             const runClean = pluginOptions.clean;
             const noCache = pluginOptions.clean || watchMode;
